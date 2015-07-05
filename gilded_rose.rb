@@ -21,42 +21,48 @@ end
 
 
 def update_nomal_item_quality(item)
-  if item.quality > 0
-    item.sell_in < 0 ? item.quality -= 2 : item.quality -= 1
-  end
+  decrease_item_quality(1, item) 
 end
 
 def update_aged_brie_quality(item)
-  if item.quality < 50
-    item.quality += 1
-    if item.sell_in < 0 && item.quality < 50
-      item.quality += 1
-    end
+  if has_not_reached_max_quality(item)
+    increase_item_quality(item)
+    increase_item_quality(0, item)
   end
 end
 
 def update_backtage_passess_quality(item)
-  if item.quality < 50
+  if has_not_reached_max_quality(item)
     if item.sell_in < 0
       item.quality = 0
     else
-      item.quality += 1
-
-      if item.sell_in < 10 && item.quality < 50
-        item.quality += 1
-      end
-
-      if item.sell_in < 5 && item.quality < 50
-        item.quality += 1
-      end
+      increase_item_quality(item)
+      increase_item_quality(10, item)
+      increase_item_quality(5, item)
     end
   end
 end
 
 def update_conjured_item_quality(item)
+  decrease_item_quality(2,item)
+end
+######Extra Helper methods##############
+def decrease_item_quality(devaluation_factor, item)
   if item.quality > 0
-    item.sell_in <= 0 ? item.quality -= 4 : item.quality -= 2
+    item.sell_in <= 0 ? item.quality -= 2*devaluation_factor : item.quality -= devaluation_factor
   end
+end
+
+def increase_item_quality(sell_in_limit=nil, item)
+  if !sell_in_limit
+    item.quality += 1
+  elsif item.sell_in < sell_in_limit && has_not_reached_max_quality(item)
+    item.quality += 1
+  end
+end
+
+def has_not_reached_max_quality(item)
+  item.quality < 50
 end
 
 
